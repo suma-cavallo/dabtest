@@ -1,0 +1,30 @@
+# This is a Databricks asset bundle definition for RDE_DAB.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: RDE_DAB
+  uuid: a46a35ba-32e3-4479-8181-b303db90b810
+
+include:
+  - resources/*.yml
+  - resources/*/*.yml
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-86390558515772.12.azuredatabricks.net
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-86390558515772.12.azuredatabricks.net
+      # We explicitly deploy to /Workspace/Users/sanumolu@cavallotechnologies.ca to make sure we only have a single copy.
+      root_path: /Workspace/Users/sanumolu@cavallotechnologies.ca/.bundle/${bundle.name}/${bundle.target}
+    permissions:
+      - user_name: sanumolu@cavallotechnologies.ca
+        level: CAN_MANAGE

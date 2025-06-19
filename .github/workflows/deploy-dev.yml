@@ -1,0 +1,64 @@
+name: Deploy to Develop
+
+concurrency: 1
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - develop
+    paths:
+      - "**/*.yml"
+      - "**/*.py"
+      - "**/*.ipynb"
+
+jobs:
+  deploy:
+    name: "Deploy bundle"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: databricks/setup-cli@dev
+
+      - run: databricks bundle validate
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev
+          DATABRICKS_PROFILE: sanumolu@cavallotechnolgies.ca
+
+      - run: databricks bundle deploy 
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev
+          DATABRICKS_PROFILE: sanumolu@cavallotechnolgies.ca
+
+  pipeline_update:
+    name: "Run pipeline update"
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: databricks/setup-cli@dev
+
+      - shell: bash
+        name: Run pipeline update
+        run: |
+          set -o pipefail
+
+          keys=("databricks_dab_test_serverless_job" "databricks_dab_test_serverless_pipeline")
+
+          for key in "${keys[@]}"; do
+            echo "Running: $key"
+            databricks bundle run "$key" --refresh-all 2>&1 | tee "output_${key}.log"
+          done
+
+        env: 
+          DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev

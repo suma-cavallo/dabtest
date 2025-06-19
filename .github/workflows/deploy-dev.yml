@@ -21,19 +21,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: databricks/setup-cli@dev
+      - uses: databricks/setup-cli@main
 
       - run: databricks bundle validate
         env:
           DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
           DATABRICKS_BUNDLE_ENV: dev
-          DATABRICKS_PROFILE: sanumolu@cavallotechnolgies.ca
+          DATABRICKS_PROFILE: dab-sp
 
       - run: databricks bundle deploy 
         env:
           DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
           DATABRICKS_BUNDLE_ENV: dev
-          DATABRICKS_PROFILE: sanumolu@cavallotechnolgies.ca
+          DATABRICKS_PROFILE: dab-sp
 
   pipeline_update:
     name: "Run pipeline update"

@@ -4,7 +4,7 @@ resources:
     RDE_DAB_pipeline:
       name: RDE_DAB_pipeline
       ## Specify the 'catalog' field to configure this pipeline to make use of Unity Catalog:
-      # catalog: catalog_name
+      catalog: catalog_name
       schema: RDE_DAB_${bundle.target}
       libraries:
         - notebook:

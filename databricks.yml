@@ -17,12 +17,12 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://adb-86390558515772.12.azuredatabricks.net
+      host: https://dbc-75d69216-9e85.cloud.databricks.com
 
   prod:
     mode: production
     workspace:
-      host: https://adb-86390558515772.12.azuredatabricks.net
+      host: https://dbc-75d69216-9e85.cloud.databricks.com
       # We explicitly deploy to /Workspace/Users/sanumolu@cavallotechnologies.ca to make sure we only have a single copy.
       root_path: /Workspace/Users/sanumolu@cavallotechnologies.ca/.bundle/${bundle.name}/${bundle.target}
     permissions:

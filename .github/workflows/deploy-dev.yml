@@ -1,6 +1,6 @@
 name: Deploy to Develop
 
-concurrency: 1
+concurrency: "1"
 
 on:
   workflow_dispatch:
@@ -17,6 +17,15 @@ jobs:
   deploy:
     name: "Deploy bundle"
     runs-on: ubuntu-latest
+    environment: dev
+    env:
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.CLIENTSECRET }}
+      DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_BUNDLE_ENV: ${{ vars.ENVIRONMENT_NAME }}
+      DATABRICKS_AUTH_TYPE: "oauth-m2m"
+      BUNDLE_VAR_repository: https://github.com/${{ github.repository }}
+      BUNDLE_VAR_git_ref_name: https://github.com/${{ github.ref_name }}
 
     steps:
       - uses: actions/checkout@v3
@@ -24,16 +33,9 @@ jobs:
       - uses: databricks/setup-cli@main
 
       - run: databricks bundle validate
-        env:
-          DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
-          DATABRICKS_BUNDLE_ENV: dev
-          DATABRICKS_PROFILE: dab-sp
-
+       
       - run: databricks bundle deploy 
-        env:
-          DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
-          DATABRICKS_BUNDLE_ENV: dev
-          DATABRICKS_PROFILE: dab-sp
+       
 
   pipeline_update:
     name: "Run pipeline update"
@@ -58,7 +60,3 @@ jobs:
             echo "Running: $key"
             databricks bundle run "$key" --refresh-all 2>&1 | tee "output_${key}.log"
           done
-
-        env: 
-          DATABRICKS_TOKEN: ${{ secrets.SP_TOKEN }}
-          DATABRICKS_BUNDLE_ENV: dev
